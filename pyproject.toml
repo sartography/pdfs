@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "html-to-pdf-converter"
+version = "0.1.0"
+description = "A Python project to convert HTML to PDF"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.25.1"
+pdfkit = "^1.0.0"
+pyppeteer = "^0.2.5"
+xhtml2pdf = "^0.2.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

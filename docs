@@ -1,0 +1,633 @@
+https://apitemplate.io/blog/how-to-convert-html-to-pdf-using-python/
+
+
+
+Products
+Pricing
+Resources
+Blog
+Sign up
+Login
+How to convert HTML to PDF using Python
+Manoj Ahirwar
+By Manoj Ahirwar
+August 31, 2023
+We often encounter the need to create PDFs based on content. While there is no right or wrong way to generate PDFs, some approaches are more efficient and quicker to build than others. Previously, we had to write all the boilerplate code to generate PDFs in our applications.
+
+
+However, now we have many great libraries and tools that can help us quickly implement this feature.
+
+The most important part of generating PDFs is the input data. The most common and useful approach is to generate PDFs from HTML content or based on a website URL.
+
+In this article, we will look into some approaches that we can take to generate PDFs from HTML
+
+Why generate PDF from HTML?
+Before we move on to the libraries, first let’s see why we prefer HTML as input data for generating PDFs. Some of the reasons are as follows
+
+Open and Mature Technology: HTML is an open standard, which ensures that tools and technologies built around it are widely available and well-understood. Its maturity also means that most of the challenges and quirks are well-documented, making troubleshooting easier.
+Cost-effective: There are a plethora of tools, libraries, and APIs available (both free and paid) that can convert HTML to PDF, reducing the need for specialized software for PDF creation.
+Embed Multimedia: HTML supports the embedding of multimedia such as images, videos, and audio. Although not all of these can be directly translated into a PDF, having a source in HTML provides options for creating rich, multimedia-enhanced documents.
+Styling with CSS: Cascading Style Sheets (CSS) provide powerful styling options for HTML content, allowing for branding, theming, and visual consistency. These can then be reflected in the resulting PDF.
+Easy to Learn and Use: Learning the basics of HTML can be done quickly, making it accessible for many users to create content.
+In summary, converting PDFs from HTML combines the best of both worlds: the flexibility, accessibility, and interactivity of HTML with the portability and Standardization of PDFs.
+
+HTML to PDF using Python Libraries
+There are many libraries available in Python that allow the generation of PDFs from HTML content, some of them are explained below.
+
+i. Pyppeteer
+Pyppeteer is a Python port of the Node library Puppeteer, which provides a high-level API over the Chrome DevTools Protocol. it’s like you are running a browser in your code that can do similar things that your browser can do. Puppeteer can be used to scrap data from websites, take screenshots for a website, and much more. Let’s see how we can utilize pyppeteer to generate PDFs from HTML.
+
+First, we need to install pyppeteer with the following command:
+
+pip install pyppeteer
+Generate PDF from a website URL
+
+import asyncio
+from pyppeteer import launch
+
+async def generate_pdf(url, pdf_path):
+    browser = await launch()
+    page = await browser.newPage()
+    
+    await page.goto(url)
+    
+    await page.pdf({'path': pdf_path, 'format': 'A4'})
+    
+    await browser.close()
+
+# Run the function
+asyncio.get_event_loop().run_until_complete(generate_pdf('https://example.com', 'example.pdf'))
+In the above code, if you see the generate_pdf method, we are doing the following things
+
+Launching a new headless browser instance
+
+Opens a new tab or page in the headless browser and waits for it to be ready.
+
+Navigate to the URL specified in the url argument and wait for the page to load.
+
+Generates a PDF of the webpage. The PDF is saved at the location specified in pdf_path, and the format is set to A4.
+
+Closes the headless browser.
+
+Generate PDF from Custom HTML content
+
+import asyncio
+from pyppeteer import launch
+
+async def generate_pdf_from_html(html_content, pdf_path):
+    browser = await launch()
+    page = await browser.newPage()
+    
+    await page.setContent(html_content)
+    
+    await page.pdf({'path': pdf_path, 'format': 'A4'})
+    
+    await browser.close()
+
+# HTML content
+html_content = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Example</title>
+</head>
+<body>
+    <h1>Hello, world!</h1>
+</body>
+</html>
+'''
+
+# Run the function
+asyncio.get_event_loop().run_until_complete(generate_pdf_from_html(html_content, 'from_html.pdf'))
+Above is another example using Pyppeteer on how we can use our own custom HTML content to generate PDFs. Let’s see what is happening in the method generate_pdf_from_html
+
+Launching a new headless browser instance
+Opens a new tab or page in the headless browser and waits for it to be ready.
+Now we are explicitly setting the content of the page to our HTML content
+Generates a PDF of the webpage. The PDF is saved at the location specified in pdf_path, and the format is set to ‘A4’.
+Closes the headless browser.
+ii. xhtml2pdf
+xhtml2pdf is another Python library that lets you generate PDFs from HTML content. Let’s see xhtml2pdf in action.
+
+The following command is to install xhtml2pdf:
+
+pip install xhtml2pdf requests
+To generate PDF from a website URL
+
+Note that xhtml2pdf does not have an in-built feature to parse the URL, but we can use requests in Python to get the content from a URL.
+
+from xhtml2pdf import pisa
+import requests
+
+def convert_url_to_pdf(url, pdf_path):
+    # Fetch the HTML content from the URL
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to fetch URL: {url}")
+        return False
+    
+    html_content = response.text
+    
+    # Generate PDF
+    with open(pdf_path, "wb") as pdf_file:
+        pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+        
+    return not pisa_status.err
+
+# URL to fetch
+url_to_fetch = "https://google.com"
+
+# PDF path to save
+pdf_path = "google.pdf"
+
+# Generate PDF
+if convert_url_to_pdf(url_to_fetch, pdf_path):
+    print(f"PDF generated and saved at {pdf_path}")
+else:
+    print("PDF generation failed")
+In the above code, we are doing the following things in our method convert_url_to_pdf
+
+First, we are using requests to get the webpage content from the URL.
+
+Once we get the content, we select the text part from the response using response.text
+
+Now the generating PDF part comes, we are using pisa.CreatePDF and pass our HTML content and PDF file name for the output.
+
+Generating PDF from custom HTML content
+
+from xhtml2pdf import pisa
+
+def convert_html_to_pdf(html_string, pdf_path):
+    with open(pdf_path, "wb") as pdf_file:
+        pisa_status = pisa.CreatePDF(html_string, dest=pdf_file)
+        
+    return not pisa_status.err
+
+# HTML content
+html_content = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Example</title>
+</head>
+<body>
+    <h1>Hello, world!</h1>
+</body>
+</html>
+'''
+
+# Generate PDF
+pdf_path = "example.pdf"
+if convert_html_to_pdf(html_content, pdf_path):
+    print(f"PDF generated and saved at {pdf_path}")
+else:
+    print("PDF generation failed")
+Generating PDF from custom HTML content is also similar to what we have done for the URL part, the only change here is, that we are passing the actual HTML content to our generating method. Now it will use our custom HTML content and generate PDF from it.
+
+iii. python-pdfkit
+python-pdfkit is a python wrapper for wkhtmltopdf utility to convert HTML to PDF using Webkit.
+
+First, we need to install python-pdfkit with pip:
+
+pip install pdfkit
+To generate PDF from website URL
+
+import pdfkit
+
+def convert_url_to_pdf(url, pdf_path):
+    try:
+        pdfkit.from_url(url, pdf_path)
+        print(f"PDF generated and saved at {pdf_path}")
+    except Exception as e:
+        print(f"PDF generation failed: {e}")
+
+# URL to fetch
+url_to_fetch = 'https://example.com'
+
+# PDF path to save
+pdf_path = 'example_from_url.pdf'
+
+# Generate PDF
+convert_url_to_pdf(url_to_fetch, pdf_path)
+pdfkit supports generating PDFs from website URLs out of the box just like Pyppeteer.
+
+In the above code, as you can see, pdfkit is generating pdf just from one line code. pdfkit.from_url is all you need to generate a PDF.
+
+Generating PDF from custom HTML content
+
+import pdfkit
+
+def convert_html_to_pdf(html_content, pdf_path):
+    try:
+        pdfkit.from_string(html_content, pdf_path)
+        print(f"PDF generated and saved at {pdf_path}")
+    except Exception as e:
+        print(f"PDF generation failed: {e}")
+
+# HTML content
+html_content = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Example</title>
+</head>
+<body>
+    <h1>Hello, world!</h1>
+</body>
+</html>
+'''
+
+# PDF path to save
+pdf_path = 'example_from_html.pdf'
+
+# Generate PDF
+convert_html_to_pdf(html_content, pdf_path)
+For generating PDF from custom HTML content, we only need to use pdfkit.from_string and provide HTML content and a pdf file path.
+
+Comparison of Pyppeteer, xhtml2pdf and python-pdfkit
+While all of these tools serve the primary purpose of HTML to PDF conversion, each brings its unique features and approaches to the table.
+
+Below is a detailed tabular comparison to help you choose the right tool for your needs.
+
+Feature/Aspect	Pyppeteer	xhtml2pdf	python-pdfkit
+Nature	Browser automation library	HTML/CSS to PDF converter	Wrapper around wkhtmltopdf
+Based On	Puppeteer (Chromium headless)	ReportLab & html5lib	wkhtmltopdf
+Dependencies	Requires Chrome/Chromium	Python libraries	Requires wkhtmltopdf
+Language	Python	Python	Python
+Javascript Support	Yes (full browser environment)	No	Yes (limited, via wkhtmltopdf)
+CSS Support	Full (as in Chrome)	Limited	Good (via wkhtmltopdf)
+Performance	May be slower (full browser)	Moderate	Fast (native conversion)
+Ease of Setup	Moderate (need Chromium)	Easy (pure Python)	Moderate (requires wkhtmltopdf)
+API Flexibility	High (full browser automation)	Moderate (focused on PDF)	Moderate (wrapper around tool)
+Usage	Good for complex web content, SPA, dynamic JS content	Good for simpler HTML/CSS docs	Common for various HTML to PDF tasks
+In conclusion, the choice between Pyppeteer, xhtml2pdf, and python-pdfkit hinges on the specific needs of a project.
+
+While Pyppeteer excels at handling dynamic content due to its full browser automation capabilities, xhtml2pdf offers a straightforward, Python-centric solution for basic conversions.
+
+Python-pdfkit, wrapping around wkhtmltopdf, stands as a versatile middle ground. Developers should weigh the features, setup complexities, and performance of each library against their project’s demands to determine the best fit.
+
+HTML to PDF using APITemplate.io
+Above are some examples of how we can use libraries to convert HTML to PDF and web pages to PDF. but when it comes to generating PDFs using templates or keeping track of generated PDFs, we need to do a lot of extra things to handle all those.
+
+We need to have our own generating pdfs tracker for tracking the files generated. Or if we want to use custom templates such as Invoice generators, we need to create and manage those templates.
+
+APITemplate.io is an API-based platform for PDF generation, perfect for the use cases mentioned. Our PDF generation API uses a Chromium-based rendering engine, which fully supports JavaScript, CSS, and HTML.
+
+
+Let’s see how we can utilize APITemplate.io to handle generating PDFs
+
+i. Template-based PDF generation
+APITemplate.io allows you to manage your templates. Go to Manage Templates from the dashboard
+
+
+From Manage Template, You can create your own templates. Following is the sample Invoice template. There are lots of templates available that you can choose and customize based on your requirements.
+
+
+To start using APITemplate.io APIs, You need to get your API Key which you can get from the API Integration Tab
+
+
+Now that you have your APITemplate account ready, let’s get to some actions and integrate it with our application. We will be using the template to generate PDFs.
+
+import requests
+import json
+
+# Initialize HTTP client
+client = requests.Session()
+
+# API URL
+url = "https://rest.apitemplate.io/v2/create-pdf?template_id=YOUR_TEMPLATE_ID"
+
+# Payload data
+payload = {
+    "date": "15/05/2022",
+    "invoice_no": "435568799",
+    "sender_address1": "3244 Jurong Drive",
+    "sender_address2": "Falmouth Maine 1703",
+    "sender_phone": "255-781-6789",
+    "sender_email": "hello@logos.com",
+    "rece_addess1": "2354 Lakeside Drive",
+    "rece_addess2": "New York 234562",
+    "rece_phone": "34333-84-223",
+    "rece_email": "business@apitemplate.io",
+    "items": [
+        {"item_name": "Oil", "unit": 1, "unit_price": 100, "total": 100},
+        {"item_name": "Rice", "unit": 2, "unit_price": 200, "total": 400},
+        {"item_name": "Mangoes", "unit": 3, "unit_price": 300, "total": 900},
+        {"item_name": "Cloth", "unit": 4, "unit_price": 400, "total": 1600},
+        {"item_name": "Orange", "unit": 7, "unit_price": 20, "total": 1400},
+        {"item_name": "Mobiles", "unit": 1, "unit_price": 500, "total": 500},
+        {"item_name": "Bags", "unit": 9, "unit_price": 60, "total": 5400},
+        {"item_name": "Shoes", "unit": 2, "unit_price": 30, "total": 60},
+    ],
+    "total": "total",
+    "footer_email": "hello@logos.com",
+}
+
+# Serialize payload to JSON
+json_payload = json.dumps(payload)
+
+# Set headers
+headers = {
+    "X-API-KEY": "YOUR_API_KEY",
+    "Content-Type": "application/json",
+}
+
+# Make the POST request
+response = client.post(url, data=json_payload, headers=headers)
+
+# Read the response
+response_string = response.text
+
+# Print the response
+print(response_string)
+and If we check response_string we have the following
+
+{
+    "download_url":"PDF_URL",
+    "transaction_ref":"8cd2aced-b2a2-40fb-bd45-392c777d6f6",
+    "status":"success",
+    "template_id":"YOUR_TEMPLATE_ID"
+}
+In the above code, it’s very easy to use APITemplate to convert html to pdf because we don’t need to install any other library. Just need to call one simple API and use our data as a request body and that’s it!
+
+You can use the download_url from the response to download or distribute the generated PDF.
+
+ii. Generate PDF from the website URL
+APITemplate also supports generating PDFs from website URLs.
+
+import requests, json
+
+def main():
+    api_key = "YOUR_API_KEY"
+    template_id = "YOUR_TEMPLATE_ID"
+
+    data = {
+      "url": "https://en.wikipedia.org/wiki/Sceloporus_malachiticus",
+      "settings": {
+        "paper_size": "A4",
+        "orientation": "1",
+        "header_font_size": "9px",
+        "margin_top": "40",
+        "margin_right": "10",
+        "margin_bottom": "40",
+        "margin_left": "10",
+        "print_background": "1",
+        "displayHeaderFooter": true,
+        "custom_header": "<style>#header, #footer { padding: 0 !important; }</style>\n<table style=\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 15px\">\n  <tr>\n    <td style=\"text-align:left; width:30%!important;\"><span class=\"date\"></span></td>\n    <td style=\"text-align:center; width:30%!important;\"><span class=\"pageNumber\"></span></td>\n    <td style=\"text-align:right; width:30%!important;\"><span class=\"totalPages\"></span></td>\n  </tr>\n</table>",
+        "custom_footer": "<style>#header, #footer { padding: 0 !important; }</style>\n<table style=\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 15px\">\n  <tr>\n    <td style=\"text-align:left; width:30%!important;\"><span class=\"date\"></span></td>\n    <td style=\"text-align:center; width:30%!important;\"><span class=\"pageNumber\"></span></td>\n    <td style=\"text-align:right; width:30%!important;\"><span class=\"totalPages\"></span></td>\n  </tr>\n</table>"
+      }
+    }
+
+    response = requests.post(
+        F"https://rest.apitemplate.io/v2/create-pdf-from-url",
+        headers = {"X-API-KEY": F"{api_key}"},
+        json= data
+    )
+
+if __name__ == "__main__":
+    main()
+In the above code, we can provide the URL in the request body along with the settings for the PDF. APITemplate will use this request body to generate a PDF and will return a download URL for your PDF.
+
+iii. Generate PDF from custom HTML content
+If you want to generate PDFs using your own custom HTML content, APITemplate supports that as well.
+
+import requests, json
+
+def main():
+    api_key = "YOUR_API_KEY"
+    template_id = "YOUR_TEMPLATE_ID"
+
+    data = {
+      "body": "<h1> hello world {{name}} </h1>",
+      "css": "<style>.bg{backgound: red};</style>",
+      "data": {
+        "name": "This is a title"
+      },
+      "settings": {
+        "paper_size": "A4",
+        "orientation": "1",
+        "header_font_size": "9px",
+        "margin_top": "40",
+        "margin_right": "10",
+        "margin_bottom": "40",
+        "margin_left": "10",
+        "print_background": "1",
+        "displayHeaderFooter": true,
+        "custom_header": "<style>#header, #footer { padding: 0 !important; }</style>\n<table style=\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 15px\">\n  <tr>\n    <td style=\"text-align:left; width:30%!important;\"><span class=\"date\"></span></td>\n    <td style=\"text-align:center; width:30%!important;\"><span class=\"pageNumber\"></span></td>\n    <td style=\"text-align:right; width:30%!important;\"><span class=\"totalPages\"></span></td>\n  </tr>\n</table>",
+        "custom_footer": "<style>#header, #footer { padding: 0 !important; }</style>\n<table style=\"width: 100%; padding: 0px 5px;margin: 0px!important;font-size: 15px\">\n  <tr>\n    <td style=\"text-align:left; width:30%!important;\"><span class=\"date\"></span></td>\n    <td style=\"text-align:center; width:30%!important;\"><span class=\"pageNumber\"></span></td>\n    <td style=\"text-align:right; width:30%!important;\"><span class=\"totalPages\"></span></td>\n  </tr>\n</table>"
+      }
+    }
+
+    response = requests.post(
+        F"https://rest.apitemplate.io/v2/create-pdf-from-html",
+        headers = {"X-API-KEY": F"{api_key}"},
+        json= data
+    )
+
+if __name__ == "__main__":
+    main()
+Similar to generating PDF from a website URL, the above API request takes body and CSS as part of the payload and it is to generate PDF.
+
+Conclusion
+PDF generation is now part of every business application and it should not make developers sweat.
+
+We have seen how we can use third-party libraries to generate PDFs if our use case is simple. But also if we have complex use cases such as maintaining templates, then APITemplate.io provides the solution just for that using simple API calls.
+
+Sign up for a free account with us now and start automating your PDF generation.
+
+Libraries:
+
+REST API Reference
+Javascript Client Library
+Python Client Library
+Java Client Library
+PHP Client Library
+C# Client Library
+Manoj Ahirwar
+Manoj Ahirwar
+Hi, I'm Manoj. I am building SaaS products. I love writing about my journey as well as writing on technical stuff. I am also trying to travel to as many countries as I can :)
+Table of Contents
+Why generate PDF from HTML?
+HTML to PDF using Python Libraries
+i. Pyppeteer
+ii. xhtml2pdf
+iii. python-pdfkit
+Comparison of Pyppeteer, xhtml2pdf and python-pdfkit
+HTML to PDF using APITemplate.io
+i. Template-based PDF generation
+ii. Generate PDF from the website URL
+iii. Generate PDF from custom HTML content
+Conclusion
+Share:
+Facebook
+ 
+Twitter
+ 
+Pinterest
+ 
+LinkedIn
+Prev
+Previous
+Exploring No-code Tools for Business Solutions
+Next
+How to convert HTML to PDF using Node.js
+Next
+
+Image Generation Tutorials
+
+PDF Generation Tutorials
+
+No-code/Automation Tutorials
+Articles for Image Generation
+
+How to leverage APITemplate for effective marketing
+Ayeesha
+Read More »
+
+How to generate PDF documents and Images with Bubble.io
+Imran Alam
+Read More »
+
+5 Easy Steps to Automate Image Generation API – FREE with Zapier, Google sheets, and APITemplate.io
+APITemplate.io
+Read More »
+
+Push-button Imagery for Community Good
+APITemplate.io
+Read More »
+
+Why Marketing Automation Is Important to You and Its Benefits
+Jacky, Founder
+Read More »
+
+How to Automate Job Posting Images for LinkedIn
+Jacky, Founder
+Read More »
+
+How to automatically generate social media images from your Shopify product list
+Jacky, Founder
+Read More »
+
+How to auto-share user feedback on social media with Zapier, Startquestion and APITemplate.io
+Jacky, Founder
+Read More »
+
+Instagram Automation: Create a Beautiful Grid Layout on Your Instagram
+Jacky, Founder
+Read More »
+
+Create a Responsive Image Template using Auto-position
+Jacky, Founder
+Read More »
+Articles for PDF Generation
+
+How to Create Printer-Friendly Pages with CSS
+Ayeesha
+Read More »
+
+How to Generate PDF Documents using PHP (Updated 2024)
+Ayeesha
+Read More »
+
+A Guide to Generate PDFs in Python (Updated 2024)
+Ahmed Hashesh
+Read More »
+
+How to Generate PDF From HTML with Playwright and Java
+APITemplate.io
+Read More »
+
+Exploring Automated Solutions in International Shipping Documents
+Ayeesha
+Read More »
+
+How to convert HTML to PDF using C#
+Manoj Ahirwar
+Read More »
+
+Web Scraping Using Puppeteer and Generate PDF Documents with APITemplate
+Imran Alam
+Read More »
+
+How to generate PDF invoices with Retool
+Ayeesha
+Read More »
+
+How to convert HTML to PDF using Java
+Manoj Ahirwar
+Read More »
+
+How to convert HTML to PDF using PHP
+Manoj Ahirwar
+Read More »
+Products
+Image Generation API
+PDF Generation API
+Generating PDFs from HTML
+Creating PDFs from URL
+Enterprise Features
+Others
+Home
+Pricing
+FAQs
+About Us
+Service Status
+Join Affiliate Program
+Registration
+Sign up
+Login
+Integrations
+Zapier Integration
+Make.com(Integromat) Integration
+Bubble.io Integration
+Direct URL/Query Strings
+Airtable Integration
+REST API Reference v2
+REST API Reference v1
+Use-cases
+Digital Marketing or Social Media
+Banner Generation
+QR Code Generation
+HTML to PDF Generation
+Legal
+Privacy Policy
+Terms of Use
+Data Processing Agreement
+Data Protection & Security
+Service Level Agreement
+Social Media/Blog
+Instagram
+Twitter
+Blog
+hello@apitemplate.io
+PDF Tools
+Merge Multiple PDFs
+Split PDF
+Rotate PDF Pages
+Convert PDF to HTML
+Convert PDF to PNG
+Convert PDF to JPEG
+Convert PNG to PDF
+Convert JPEG to PDF
+Image Generation Tutorials
+Image Template Editor and API Console
+Zapier Integration
+Make.com(Integromat) Integration
+Airtable Integration
+Direct URL Integration
+Auto-Position to Create Responsive Image
+Make.com(Integromat) Integration for Infographic
+PDF Generation Tutorials
+Zapier Integration
+Make.com(Integromat) Integration
+Embedding charts into a PDF
+Learn The Template Language (Jinja2)
+Add Header and Footer to PDF
+Copyright © 2024 APITemplate.io
+We use cookies on our website to give you the most relevant experience by remembering your preferences and repeat visits. By clicking “Accept All”, you consent to the use of ALL the cookies
+
+
+To get more information about these cookies and the processing of your personal data, check our Privacy Policy
+
+
+Accept All
