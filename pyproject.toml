@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.25.1"
+weasyprint = "^53.3"
 pdfkit = "^1.0.0"
 pyppeteer = "^0.2.5"
 xhtml2pdf = "^0.2.5"
