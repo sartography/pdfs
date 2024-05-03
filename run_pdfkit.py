@@ -2,7 +2,7 @@ import pdfkit
 
 # Define your data
 source_html = "index.html"
-output_filename = "output.pdf"
+output_filename = "output_pdfkit.pdf"
 
 # Main program
 if __name__ == "__main__":
