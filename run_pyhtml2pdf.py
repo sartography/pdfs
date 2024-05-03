@@ -16,5 +16,5 @@ if __name__ == "__main__":
         print("Usage: python run_pyhtml2pdf.py")
         sys.exit(1)
     source_html = "index.html"
-    output_pdf = "pyhtml2pdf_out.pdf"
+    output_pdf = "output_pyhtml2pdf.pdf"
     convert_html_to_pdf(source_html, output_pdf)

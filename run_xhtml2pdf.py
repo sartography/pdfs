@@ -2,7 +2,7 @@ from xhtml2pdf import pisa  # import python module
 
 # Define your data
 source_html = "index.html"
-output_filename = "xhtml2pdf_out.pdf"
+output_filename = "output_xhtml2pdf.pdf"
 
 
 # Utility function
