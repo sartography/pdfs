@@ -7,6 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pyhtml2pdf = "*"
 requests = "^2.25.1"
 weasyprint = "^53.3"
 pdfkit = "^1.0.0"
