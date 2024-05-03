@@ -1,8 +1,9 @@
-from xhtml2pdf import pisa             # import python module
+from xhtml2pdf import pisa  # import python module
 
 # Define your data
 source_html = "index.html"
-output_filename = "test.pdf"
+output_filename = "xhtml2pdf_out.pdf"
+
 
 # Utility function
 def convert_html_to_pdf(source_html, output_filename):
@@ -11,18 +12,20 @@ def convert_html_to_pdf(source_html, output_filename):
 
     # convert HTML to PDF
     pisa_status = pisa.CreatePDF(
-            source_html,                # the HTML to convert
-            dest=result_file)           # file handle to receive result
+        source_html,  # the HTML to convert
+        dest=result_file,
+    )  # file handle to receive result
 
     # close output file
-    result_file.close()                 # close output file
+    result_file.close()  # close output file
 
     # return True on success and False on errors
     return pisa_status.err
 
+
 # Main program
 if __name__ == "__main__":
     pisa.showLogging()
-    with open(source_html, 'r') as f:
+    with open(source_html, "r") as f:
         source_html_content = f.read()
     convert_html_to_pdf(source_html_content, output_filename)
